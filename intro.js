@@ -966,8 +966,8 @@
       //set new position to helper layer
       helperLayer.style.cssText = 'width: ' + (elementPosition.width  + widthHeightPadding)  + 'px; ' +
                                         'height:' + (elementPosition.height + widthHeightPadding)  + 'px; ' +
-                                        'top:'    + (elementPosition.top    - widthHeightPadding / 2)   + 'px;' +
-                                        'left: '  + (elementPosition.left   - widthHeightPadding / 2)   + 'px;';
+                                        'top:'    + (elementPosition.top    - widthHeightPadding / 2 - 1)   + 'px;' +
+                                        'left: '  + (elementPosition.left   - widthHeightPadding / 2 - 1)   + 'px;';
 
     }
   }
