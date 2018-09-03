@@ -1073,59 +1073,83 @@
         stillNested(scrollParent);
       }
 
-      // set new position to helper layer
-      _setHelperLayerPosition.call(self, oldHelperLayer);
-      _setHelperLayerPosition.call(self, oldReferenceLayer);
+      // The currently highlighted element
+      var highlightedElement = document.querySelector('.introjs-showElement');
 
-      //remove `introjs-fixParent` class from the elements
-      var fixParents = document.querySelectorAll('.introjs-fixParent');
-      _forEach(fixParents, function (parent) {
-        _removeClass(parent, /introjs-fixParent/g);
-      });
-
-      //remove old classes if the element still exist
-      _removeShowElement();
-
-      //we should wait until the CSS3 transition is competed (it's 0.3 sec) to prevent incorrect `height` and `width` calculation
-      if (self._lastShowElementTimer) {
-        window.clearTimeout(self._lastShowElementTimer);
+      if (self._introItems[self._currentStep].delay) {
+        // When delay needed elements are likely to move so hide highlighting.
+        oldHelperLayer.classList.add('no-highlight');
+        oldReferenceLayer.classList.add('no-highlight');
+        highlightedElement.classList.add('no-highlight');
       }
 
-      self._lastShowElementTimer = window.setTimeout(function() {
-        //set current step to the label
-        if (oldHelperNumberLayer !== null) {
-          oldHelperNumberLayer.innerHTML = targetElement.step;
+      var currentStep = self._introItems[self._currentStep];
+
+      // After the required delay between steps
+      setTimeout(function () {
+        // If the timeout is not for the current step, return.
+        if (currentStep !== self._introItems[self._currentStep]) return;
+        if (self._introItems[self._currentStep].delay && currentStep === self._introItems[self._currentStep]) {
+          // Everything back to normal, continue highlighting.
+          oldHelperLayer.classList.remove('no-highlight');
+          oldReferenceLayer.classList.remove('no-highlight');
+          highlightedElement.classList.remove('no-highlight');
         }
-        //set current tooltip text
-        oldtooltipLayer.innerHTML = targetElement.intro;
-        //set the tooltip position
-        oldtooltipContainer.style.display = "block";
-        _placeTooltip.call(self, targetElement.element, oldtooltipContainer, oldArrowLayer, oldHelperNumberLayer);
+        // set new position to helper layer
+        _setHelperLayerPosition.call(self, oldHelperLayer);
+        _setHelperLayerPosition.call(self, oldReferenceLayer);
 
-        //change active bullet
-        if (self._options.showBullets) {
-            oldReferenceLayer.querySelector('.introjs-bullets li > a.active').className = '';
-            oldReferenceLayer.querySelector('.introjs-bullets li > a[data-stepnumber="' + targetElement.step + '"]').className = 'active';
-        }
-        oldReferenceLayer.querySelector('.introjs-progress .introjs-progressbar').style.cssText = 'width:' + _getProgress.call(self) + '%;';
-        oldReferenceLayer.querySelector('.introjs-progress .introjs-progressbar').setAttribute('aria-valuenow', _getProgress.call(self));
+        //remove `introjs-fixParent` class from the elements
+        var fixParents = document.querySelectorAll('.introjs-fixParent');
+        _forEach(fixParents, function (parent) {
+          _removeClass(parent, /introjs-fixParent/g);
+        });
 
-        //show the tooltip
-        oldtooltipContainer.style.opacity = 1;
-        if (oldHelperNumberLayer) oldHelperNumberLayer.style.opacity = 1;
+        //remove old classes if the element still exist
+        _removeShowElement();
 
-        //reset button focus
-        if (typeof skipTooltipButton !== "undefined" && skipTooltipButton !== null && /introjs-donebutton/gi.test(skipTooltipButton.className)) {
-          // skip button is now "done" button
-          skipTooltipButton.focus();
-        } else if (typeof nextTooltipButton !== "undefined" && nextTooltipButton !== null) {
-          //still in the tour, focus on next
-          nextTooltipButton.focus();
+        //we should wait until the CSS3 transition is competed (it's 0.3 sec) to prevent incorrect `height` and `width` calculation
+        if (self._lastShowElementTimer) {
+          window.clearTimeout(self._lastShowElementTimer);
         }
 
-        // change the scroll of the window, if needed
-        _scrollTo.call(self, targetElement.scrollTo, targetElement, oldtooltipLayer);
-      }, 350);
+        self._lastShowElementTimer = window.setTimeout(function() {
+          //set current step to the label
+          if (oldHelperNumberLayer !== null) {
+            oldHelperNumberLayer.innerHTML = targetElement.step;
+          }
+          //set current tooltip text
+          oldtooltipLayer.innerHTML = targetElement.intro;
+          //set the tooltip position
+          oldtooltipContainer.style.display = "block";
+          _placeTooltip.call(self, targetElement.element, oldtooltipContainer, oldArrowLayer, oldHelperNumberLayer);
+
+          //change active bullet
+          if (self._options.showBullets) {
+              oldReferenceLayer.querySelector('.introjs-bullets li > a.active').className = '';
+              oldReferenceLayer.querySelector('.introjs-bullets li > a[data-stepnumber="' + targetElement.step + '"]').className = 'active';
+          }
+          oldReferenceLayer.querySelector('.introjs-progress .introjs-progressbar').style.cssText = 'width:' + _getProgress.call(self) + '%;';
+          oldReferenceLayer.querySelector('.introjs-progress .introjs-progressbar').setAttribute('aria-valuenow', _getProgress.call(self));
+
+          //show the tooltip
+          oldtooltipContainer.style.opacity = 1;
+          if (oldHelperNumberLayer) oldHelperNumberLayer.style.opacity = 1;
+
+          //reset button focus
+          if (typeof skipTooltipButton !== "undefined" && skipTooltipButton !== null && /introjs-donebutton/gi.test(skipTooltipButton.className)) {
+            // skip button is now "done" button
+            skipTooltipButton.focus();
+          } else if (typeof nextTooltipButton !== "undefined" && nextTooltipButton !== null) {
+            //still in the tour, focus on next
+            nextTooltipButton.focus();
+          }
+
+          // change the scroll of the window, if needed
+          _scrollTo.call(self, targetElement.scrollTo, targetElement, oldtooltipLayer);
+        }, 350);
+      // The current step's delay.
+      }, self._introItems[self._currentStep].delay);
 
       // end of old element if-else condition
     } else {
@@ -1383,7 +1407,10 @@
       nextTooltipButton.focus();
     }
 
-    _setShowElement(targetElement);
+    // Highlights the required element after the delayed time.
+    setTimeout(function () {
+      _setShowElement(targetElement);
+    }, self._introItems[self._currentStep].delay);
 
     if (typeof (this._introAfterChangeCallback) !== 'undefined') {
       this._introAfterChangeCallback.call(this, targetElement.element);
