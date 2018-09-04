@@ -495,6 +495,17 @@
 
     //re-align hints
     _reAlignHints.call(this);
+    // Reload current step
+    _showElement.call(this, this._introItems[this._currentStep]);
+    if (typeof this._introItems[this._currentStep].selector === 'object') {
+      var self = this;
+      // Reset helper layers in case scrolling would make the positioning incorrect
+      setTimeout(() => {
+        _setHelperLayerPosition.call(this, document.querySelector('.introjs-helperLayer'));
+        _setHelperLayerPosition.call(this, document.querySelector('.introjs-tooltipReferenceLayer'));
+        _setHelperLayerPosition.call(this, document.querySelector('.introjs-disableInteraction'));
+      }, 350);
+    }
     return this;
   }
 
@@ -1089,7 +1100,12 @@
       setTimeout(function () {
         // If the timeout is not for the current step, return.
         if (currentStep !== self._introItems[self._currentStep]) return;
-        if (self._introItems[self._currentStep].delay && currentStep === self._introItems[self._currentStep]) {
+        if (
+          // The step either has a delay or the sidebar been toggled
+          (self._introItems[self._currentStep].delay ||
+            self._introItems[self._currentStep].sidebar) &&
+          currentStep === self._introItems[self._currentStep]
+        ) {
           // Everything back to normal, continue highlighting.
           oldHelperLayer.classList.remove('no-highlight');
           oldReferenceLayer.classList.remove('no-highlight');
