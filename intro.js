@@ -1012,6 +1012,15 @@
     anchor.tabIndex = 0;
   }
 
+  function stillNested(scrollP) {
+    if (scrollP !== document.body) {
+      let newParent = _getScrollParent(scrollP);
+      // target is still within a scrollable element
+      _scrollParentToElement(newParent, scrollP);
+      stillNested(newParent);
+    }
+  }
+
   /**
    * Show an element on the page
    *
@@ -1068,15 +1077,6 @@
 
       // scroll to element
       scrollParent = _getScrollParent( targetElement.element );
-
-      function stillNested(scrollP) {
-        if (scrollP !== document.body) {
-          let newParent = _getScrollParent(scrollP);
-          // target is still within a scrollable element
-          _scrollParentToElement(newParent, scrollP);
-          stillNested(newParent);
-        }
-      }
 
       if (scrollParent !== document.body) {
         // target is within a scrollable element
@@ -1187,6 +1187,7 @@
       if (scrollParent !== document.body) {
         // target is within a scrollable element
         _scrollParentToElement(scrollParent, targetElement.element);
+        stillNested(scrollParent);
       }
 
       //set new position to helper layer
