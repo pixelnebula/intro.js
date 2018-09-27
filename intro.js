@@ -500,7 +500,7 @@
     if (typeof this._introItems[this._currentStep].selector === 'object') {
       var self = this;
       // Reset helper layers in case scrolling would make the positioning incorrect
-      setTimeout(() => {
+      setTimeout(function () {
         _setHelperLayerPosition.call(this, document.querySelector('.introjs-helperLayer'));
         _setHelperLayerPosition.call(this, document.querySelector('.introjs-tooltipReferenceLayer'));
         _setHelperLayerPosition.call(this, document.querySelector('.introjs-disableInteraction'));
@@ -1014,7 +1014,7 @@
 
   function stillNested(scrollP) {
     if (scrollP !== document.body) {
-      let newParent = _getScrollParent(scrollP);
+      var newParent = _getScrollParent(scrollP);
       // target is still within a scrollable element
       _scrollParentToElement(newParent, scrollP);
       stillNested(newParent);
