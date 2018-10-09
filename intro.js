@@ -827,7 +827,7 @@
     */
 
     // Check for space below
-    if (targetElementRect.bottom + tooltipHeight + tooltipHeight > windowSize.height) {
+    if (targetElementRect.bottom + tooltipHeight > windowSize.height) {
       _removeEntry(possiblePositions, "bottom");
     }
 
@@ -1415,9 +1415,9 @@
       }
     }
 
-    prevTooltipButton.setAttribute('role', 'button');
-    nextTooltipButton.setAttribute('role', 'button');
-    skipTooltipButton.setAttribute('role', 'button');
+    if (prevTooltipButton) prevTooltipButton.setAttribute('role', 'button');
+    if (nextTooltipButton) nextTooltipButton.setAttribute('role', 'button');
+    if (skipTooltipButton) skipTooltipButton.setAttribute('role', 'button');
 
     //Set focus on "next" button, so that hitting Enter always moves you onto the next step
     if (typeof nextTooltipButton !== "undefined" && nextTooltipButton !== null) {
