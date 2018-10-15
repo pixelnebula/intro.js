@@ -506,11 +506,9 @@
 
       if (self._introItems[self._currentStep].isModal) {
         var elms = Array.from(document.querySelectorAll('.introjs-helperLayer, .introjs-overlay'));
-        console.log(elms);
         elms.forEach(function (elm) {
           elm.style.opacity = 0;
         });
-        console.log(elms);
       }
     }, this._introItems[this._currentStep].delay);
     return this;
@@ -597,11 +595,9 @@
 
     setTimeout(function () {
       var elms = Array.from(document.querySelectorAll('.introjs-showElement, .introjs-relativePosition'));
-      console.log(elms);
       elms.forEach(function (elm) {
         elm.classList.remove('introjs-showElement', 'introjs-relativePosition');
       });
-      console.log(elms);
     }, 200);
   }
 
