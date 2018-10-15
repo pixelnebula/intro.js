@@ -497,15 +497,22 @@
     _reAlignHints.call(this);
     // Reload current step
     _showElement.call(this, this._introItems[this._currentStep]);
-    if (typeof this._introItems[this._currentStep].selector === 'object') {
-      var self = this;
-      // Reset helper layers in case scrolling would make the positioning incorrect
-      setTimeout(function () {
-        _setHelperLayerPosition.call(this, document.querySelector('.introjs-helperLayer'));
-        _setHelperLayerPosition.call(this, document.querySelector('.introjs-tooltipReferenceLayer'));
-        _setHelperLayerPosition.call(this, document.querySelector('.introjs-disableInteraction'));
-      }, 350);
-    }
+    var self = this;
+    // Reset helper layers in case scrolling would make the positioning incorrect
+    setTimeout(function () {
+      _setHelperLayerPosition.call(self, document.querySelector('.introjs-helperLayer'));
+      _setHelperLayerPosition.call(self, document.querySelector('.introjs-tooltipReferenceLayer'));
+      _setHelperLayerPosition.call(self, document.querySelector('.introjs-disableInteraction'));
+
+      if (self._introItems[self._currentStep].isModal) {
+        var elms = Array.from(document.querySelectorAll('.introjs-helperLayer, .introjs-overlay'));
+        console.log(elms);
+        elms.forEach(function (elm) {
+          elm.style.opacity = 0;
+        });
+        console.log(elms);
+      }
+    }, this._introItems[this._currentStep].delay);
     return this;
   }
 
@@ -587,6 +594,15 @@
 
     //set the step to zero
     this._currentStep = undefined;
+
+    setTimeout(function () {
+      var elms = Array.from(document.querySelectorAll('.introjs-showElement, .introjs-relativePosition'));
+      console.log(elms);
+      elms.forEach(function (elm) {
+        elm.classList.remove('introjs-showElement', 'introjs-relativePosition');
+      });
+      console.log(elms);
+    }, 200);
   }
 
   /**
@@ -1107,9 +1123,9 @@
           currentStep === self._introItems[self._currentStep]
         ) {
           // Everything back to normal, continue highlighting.
-          oldHelperLayer.classList.remove('no-highlight');
-          oldReferenceLayer.classList.remove('no-highlight');
-          highlightedElement.classList.remove('no-highlight');
+          if (oldHelperLayer) oldHelperLayer.classList.remove('no-highlight');
+          if (oldReferenceLayer) oldReferenceLayer.classList.remove('no-highlight');
+          if (highlightedElement) highlightedElement.classList.remove('no-highlight');
         }
         // set new position to helper layer
         _setHelperLayerPosition.call(self, oldHelperLayer);
@@ -1163,6 +1179,14 @@
 
           // change the scroll of the window, if needed
           _scrollTo.call(self, targetElement.scrollTo, targetElement, oldtooltipLayer);
+
+          if (self._currentStep && self._introItems[self._currentStep].doubleCheckPosition) {
+            // Make sure positioning isn't off after showing an element when doubleCheckPosition is set.
+            _setHelperLayerPosition.call(self, document.querySelector('.introjs-helperLayer'));
+            _setHelperLayerPosition.call(self, document.querySelector('.introjs-tooltipReferenceLayer'));
+            _setHelperLayerPosition.call(self, document.querySelector('.introjs-disableInteraction'));
+          }
+
         }, 350);
       // The current step's delay.
       }, self._introItems[self._currentStep].delay);
@@ -1336,6 +1360,10 @@
 
       // change the scroll of the window, if needed
       _scrollTo.call(this, targetElement.scrollTo, targetElement, tooltipLayer);
+
+      _setHelperLayerPosition.call(self, document.querySelector('.introjs-helperLayer'));
+      _setHelperLayerPosition.call(self, document.querySelector('.introjs-tooltipReferenceLayer'));
+      _setHelperLayerPosition.call(self, document.querySelector('.introjs-disableInteraction'));
 
       //end of new element if-else condition
     }
