@@ -301,7 +301,7 @@
   * @return type
   */
   function _onKeyDown (e) {
-    var code = (e.code === null) ? e.which : e.code;
+    var code = (e.code === null) ? e.which : e.code || e.key;
 
     // if code/e.which is null
     if (code === null) {
