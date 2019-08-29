@@ -986,11 +986,20 @@
         widthHeightPadding = 0;
       }
 
+      var winHeight = _getWinSize().height;
+      var oversized = false;
+      if (elementPosition.height > winHeight) {
+        oversized = true;
+        elementPosition.height = winHeight;
+      }
+
       //set new position to helper layer
       helperLayer.style.cssText = 'width: ' + (elementPosition.width  + widthHeightPadding)  + 'px; ' +
-                                        'height:' + (elementPosition.height + widthHeightPadding)  + 'px; ' +
-                                        'top:'    + (elementPosition.top    - widthHeightPadding / 2 - 1)   + 'px;' +
-                                        'left: '  + (elementPosition.left   - widthHeightPadding / 2 - 1)   + 'px;';
+                                  'height:' + (oversized ?
+                                    elementPosition.height - widthHeightPadding + 'px;' :
+                                    elementPosition.height + widthHeightPadding)  + 'px; ' +
+                                  'top:'    + (elementPosition.top    - widthHeightPadding / 2 - 1)   + 'px;' +
+                                  'left: '  + (elementPosition.left   - widthHeightPadding / 2 - 1)   + 'px;';
 
     }
   }
@@ -1090,6 +1099,7 @@
       // scroll to element
       scrollParent = _getScrollParent( targetElement.element );
 
+      // if (scrollParent !== document.body && scrollParent !== document.documentElement) {
       if (scrollParent !== document.body) {
         // target is within a scrollable element
         _scrollParentToElement(scrollParent, targetElement.element);
@@ -1150,6 +1160,10 @@
           oldtooltipLayer.innerHTML = targetElement.intro;
           //set the tooltip position
           oldtooltipContainer.style.display = "block";
+
+          // change the scroll of the window, if needed
+          _scrollTo.call(self, targetElement.scrollTo, targetElement, oldtooltipLayer);
+
           _placeTooltip.call(self, targetElement.element, oldtooltipContainer, oldArrowLayer, oldHelperNumberLayer);
 
           //change active bullet
@@ -1173,8 +1187,8 @@
             nextTooltipButton.focus();
           }
 
-          // change the scroll of the window, if needed
-          _scrollTo.call(self, targetElement.scrollTo, targetElement, oldtooltipLayer);
+          // // change the scroll of the window, if needed
+          // _scrollTo.call(self, targetElement.scrollTo, targetElement, oldtooltipLayer);
 
           if (self._currentStep && self._introItems[self._currentStep].doubleCheckPosition) {
             // Make sure positioning isn't off after showing an element when doubleCheckPosition is set.
@@ -1204,6 +1218,7 @@
       // scroll to element
       scrollParent = _getScrollParent( targetElement.element );
 
+      // if (scrollParent !== document.body && scrollParent !== document.documentElement) {
       if (scrollParent !== document.body) {
         // target is within a scrollable element
         _scrollParentToElement(scrollParent, targetElement.element);
@@ -2358,6 +2373,12 @@
   */
   function _scrollParentToElement (parent, element) {
     parent.scrollTop = element.offsetTop - parent.offsetTop;
+    var newParent;
+    if (parent !== document.body) {
+      newParent = _getScrollParent(parent);
+      // target is within a scrollable element
+      _scrollParentToElement(newParent, parent);
+    }
   }
 
   /**
