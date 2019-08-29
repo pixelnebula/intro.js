@@ -987,17 +987,17 @@
       }
 
       var winHeight = _getWinSize().height;
-      var oversized = false;
+      var oversized;
       if (elementPosition.height > winHeight) {
         oversized = true;
-        elementPosition.height = winHeight;
+        elementPosition.height = winHeight - elementPosition.top;
       }
 
       //set new position to helper layer
       helperLayer.style.cssText = 'width: ' + (elementPosition.width  + widthHeightPadding)  + 'px; ' +
-                                  'height:' + (oversized ?
-                                    elementPosition.height - widthHeightPadding + 'px;' :
-                                    elementPosition.height + widthHeightPadding)  + 'px; ' +
+      'height:' + (oversized ?
+        elementPosition.height + widthHeightPadding / 2 :
+        elementPosition.height + widthHeightPadding) + 'px; ' +
                                   'top:'    + (elementPosition.top    - widthHeightPadding / 2 - 1)   + 'px;' +
                                   'left: '  + (elementPosition.left   - widthHeightPadding / 2 - 1)   + 'px;';
 
@@ -1366,11 +1366,11 @@
 
       tooltipLayer.appendChild(buttonsLayer);
 
-      //set proper position
-      _placeTooltip.call(self, targetElement.element, tooltipLayer, arrowLayer, helperNumberLayer);
-
       // change the scroll of the window, if needed
       _scrollTo.call(this, targetElement.scrollTo, targetElement, tooltipLayer);
+
+      //set proper position
+      _placeTooltip.call(self, targetElement.element, tooltipLayer, arrowLayer, helperNumberLayer);
 
       _setHelperLayerPosition.call(self, document.querySelector('.introjs-helperLayer'));
       _setHelperLayerPosition.call(self, document.querySelector('.introjs-tooltipReferenceLayer'));
@@ -1503,7 +1503,7 @@
       // the center of the target element or tooltip.
 
       if (top < 0 || targetElement.element.clientHeight > winHeight) {
-        window.scrollBy(0, rect.top - ((winHeight / 2) -  (rect.height / 2)) - this._options.scrollPadding); // 30px padding from edge to look nice
+        window.scrollBy(0, rect.top - ((winHeight / 2) -  (rect.height / 2)) - Number.parseInt(this._options.scrollPadding)); // 30px padding from edge to look nice
 
       //Scroll down
       } else {
